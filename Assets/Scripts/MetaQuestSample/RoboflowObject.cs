@@ -11,10 +11,7 @@ public class RoboflowObject : MonoBehaviour
     [SerializeField] private float autoDisableDuration = 2f; // Time in seconds before this object hides itself again if not tracked.
     [SerializeField] private GameObject debugTextObject; // Reference to the text GameObject (used to rotate it toward camera).
     [SerializeField] private TMPro.TextMeshProUGUI debugText; // Reference to the TextMeshPro component for displaying debug info.
-
-    private string @class = "DefaultObjectName"; // The class name of the detected object (e.g. "bear", "panda").
     public int classID = 0; // The class index (optional), e.g. 0 for bear, 1 for panda.
-    private Coroutine autoDisableCoroutine; // Reference to the coroutine used to delay auto-disable.
 
     /// <summary>
     /// Resets this object to its initial state: disabled, zeroed position and rotation.
@@ -24,7 +21,6 @@ public class RoboflowObject : MonoBehaviour
         this.gameObject.SetActive(false);
         this.gameObject.transform.position = Vector3.zero;
         this.gameObject.transform.rotation = Quaternion.identity;
-        this.@class = @class;
         this.classID = classId;
     }
 
@@ -73,21 +69,5 @@ public class RoboflowObject : MonoBehaviour
         this.gameObject.transform.position = position;
         //this.debugTextObject.transform.rotation = Quaternion.LookRotation(debugTextObject.transform.position - CameraPosition);
         this.Enable();
-
-        if (autoDisableCoroutine != null)
-        {
-            StopCoroutine(autoDisableCoroutine);
-        }
-
-        //autoDisableCoroutine = StartCoroutine(AutoDisableAfterDelay());
-    }
-
-    /// <summary>
-    /// Coroutine that waits a few seconds and then disables the object.
-    /// </summary>
-    private IEnumerator AutoDisableAfterDelay()
-    {
-        yield return new WaitForSeconds(autoDisableDuration);
-        Disable();
     }
 }

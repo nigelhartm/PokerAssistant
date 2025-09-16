@@ -40,7 +40,6 @@ public class RoboflowCaller : MonoBehaviour
             "JC", "JD", "JH", "JS",
             "KC", "KD", "KH", "KS",
             "QC", "QD", "QH", "QS"}; // Names of classes for
-    private List<string> alreadyTracked = new List<string>(); // Tracks currently active markers
     private List<string> thisTimeInHand = new List<string>(); // Tracks cards currently in hand
     private String[] HandCards = new String[2]; // Cards in hand 
     private List<string> FieldCards = new List<string>(); // Cards on the field
@@ -119,25 +118,6 @@ public class RoboflowCaller : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Starts/stops the streaming coroutine.
-    /// </summary>
-    public void onStreamingButtonCLicked()
-    {
-        if (isStreaming)
-        {
-            isStreaming = false;
-            clearPreviousMarkers();
-            Debug.Log("Streaming stopped.");
-        }
-        else
-        {
-            isStreaming = true;
-            StartCoroutine(callRoboflow());
-            Debug.Log("Streaming started.");
-        }
-    }
-
     private void updateTexture2D() {
         texture2D.SetPixels(webCamTextureManager.WebCamTexture.GetPixels());
         texture2D.Apply();
@@ -156,26 +136,8 @@ public class RoboflowCaller : MonoBehaviour
 
         texture2D = new Texture2D(webCamTextureManager.WebCamTexture.width, webCamTextureManager.WebCamTexture.height, TextureFormat.RGB24, false);
         updateTexture2D();
-
-        // DEBUG
-        onStreamingButtonCLicked();
-    }
-
-    /// <summary>
-    /// Scales down a texture to the given dimensions.
-    /// </summary>
-    private Texture2D resizeTexture(Texture2D source, int targetWidth, int targetHeight)
-    {
-        var rt = RenderTexture.GetTemporary(targetWidth, targetHeight);
-        rt.filterMode = FilterMode.Bilinear;
-        var previous = RenderTexture.active;
-        RenderTexture.active = rt;
-        Graphics.Blit(source, rt);
-        result.ReadPixels(new Rect(0, 0, targetWidth, targetHeight), 0, 0);
-        result.Apply();
-        RenderTexture.active = previous;
-        RenderTexture.ReleaseTemporary(rt);
-        return result;
+        isStreaming = true;
+        StartCoroutine(callRoboflow());
     }
 
     private IEnumerator callRoboflow()
@@ -224,18 +186,6 @@ public class RoboflowCaller : MonoBehaviour
     }
 
     /// <summary>
-    /// Clears all previously tracked markers.
-    /// </summary>
-    private void clearPreviousMarkers()
-    {
-        foreach (var marker in _activeMarkerMap.Values)
-        {
-            if (marker == null) continue;
-            marker.Disable();
-        }
-    }
-
-    /// <summary>
     /// Returns an existing marker for a given class ID.
     /// </summary>
     private RoboflowObject checkForExistingMarker(int classID)
@@ -244,117 +194,116 @@ public class RoboflowCaller : MonoBehaviour
         return marker;
     }
 
-    /// <summary>
-    /// Projects 2D detections into 3D space using raycasting and renders marker objects. Copy from Rob's PCA samples.
-    /// </summary>
     public void renderDetections(List<ObjectDetectionPrediction> predictions)
     {
-        alreadyTracked.Clear();
-        Vector2Int camRes = PassthroughCameraUtils.GetCameraIntrinsics(webCamTextureManager.Eye).Resolution;
-        float halfWidth = targetWidth * 0.5f;
-        float halfHeight = targetHeight * 0.5f;
+        thisTimeInHand.Clear();
 
-        for (int i = 0; i < predictions.Count; i++)
+        // Dictionary to store accumulated positions per class
+        Dictionary<string, List<Vector3>> classPositions = new();
+
+        foreach (var prediction in predictions)
         {
-            if (alreadyTracked.Contains(predictions[i].Class))
-            {
-                Debug.Log($"Already tracking {predictions[i].Class}, skipping.");
-                continue;
-            }
-            ObjectDetectionPrediction prediction = predictions[i];
-
             if (prediction.Confidence < minConfidence)
-            {
-                Debug.Log($"Detection {i} below threshold.");
                 continue;
-            }
 
             RoboflowObject marker = checkForExistingMarker(prediction.Class_Id);
             if (marker == null)
-            {
-                Debug.Log($"No marker assigned for class {prediction.Class_Id}");
                 continue;
-            }
 
-            // Convert center to pixel space
-            float adjustedCenterX = prediction.X - halfWidth;
-            float adjustedCenterY = prediction.Y - halfHeight;
-            float perX = (adjustedCenterX + halfWidth) / targetWidth;
-            float perY = (adjustedCenterY + halfHeight) / targetHeight;
-            Vector2 centerPixel = new Vector2(perX * camRes.x, (1.0f - perY) * camRes.y);
-            Ray centerRay = PassthroughCameraUtils.ScreenPointToRayInWorld(webCamTextureManager.Eye, new Vector2Int(Mathf.RoundToInt(centerPixel.x), Mathf.RoundToInt(centerPixel.y)));
-
-            if (!envRaycastManager.Raycast(centerRay, out var centerHit))
-            {
-                Debug.LogWarning("Raycast failed.");
+            Vector3? worldPos = GetWorldPoint(prediction);
+            if (worldPos == null)
                 continue;
-            }
 
-            Vector3 markerWorldPos = centerHit.point;
+            // Store position in dictionary
+            if (!classPositions.ContainsKey(prediction.Class))
+                classPositions[prediction.Class] = new List<Vector3>();
 
-            alreadyTracked.Add(prediction.Class);
-
-            // Check if in hand
-            float distanceToHand = Vector3.Distance(markerWorldPos, leftHandAnchor.position);
-            if (distanceToHand < 0.25f) // If within 25cm of hand
-            {
-                marker.Disable();
-                thisTimeInHand.Add(prediction.Class);
-                Debug.Log("In hand probably: " + prediction.Class);
-                if (FieldCards.Contains(prediction.Class))
-                {
-                    FieldCards.Remove(prediction.Class);
-                    // Start evaluation coroutine
-                    StartCoroutine(EvaluateHand());
-                    Debug.Log($"Card {prediction.Class} removed from field. Field now has {FieldCards.Count} cards.");
-                }
-            }
-            // On field - add marker
-            else {
-                if (!FieldCards.Contains(prediction.Class) && FieldCards.Count < 5 && !HandCards.Contains(prediction.Class))
-                {
-                    FieldCards.Add(prediction.Class);
-                    Debug.Log($"Card {prediction.Class} on field. Field now has {FieldCards.Count} cards.");
-                    marker.SuccesfullyTracked(markerWorldPos + Vector3.up * 0.08f, CenterEyeAnchor.transform.position);
-                    marker.SetDebugText(prediction.Class.Substring(0, prediction.Class.Length - 1));
-                    Debug.Log($"Placed marker {i} at {markerWorldPos}");
-                    // Start evaluation coroutine
-                    StartCoroutine(EvaluateHand());
-                }
-            }
+            classPositions[prediction.Class].Add(worldPos.Value);
         }
 
-        // Update hand cards if exactly two detected
+        // Step 2: For each class, take average position
+        foreach (var kvp in classPositions)
+        {
+            string className = kvp.Key;
+            List<Vector3> positions = kvp.Value;
+            Vector3 avgPos = positions.Aggregate(Vector3.zero, (acc, p) => acc + p) / positions.Count;
+
+            RoboflowObject marker = checkForExistingMarker(cardClassToID(className));
+            if (marker == null)
+                continue;
+
+            // Check if card is in hand (close to left hand)
+            float distanceToHand = Vector3.Distance(avgPos, leftHandAnchor.position);
+            if (distanceToHand < 0.25f)
+            {
+                marker.Disable();
+                thisTimeInHand.Add(className);
+                if (FieldCards.Contains(className))
+                {
+                    FieldCards.Remove(className);
+                    StartCoroutine(EvaluateHand());
+                }
+            }
+            else
+            {
+                if (positions.Count >= 2)
+                {
+                    // Just track on first view -> Because of tracking delay
+                    if (!FieldCards.Contains(className) && FieldCards.Count < 5 && !HandCards.Contains(className))
+                    {
+                        marker.SuccesfullyTracked(avgPos + Vector3.up * 0.1f, CenterEyeAnchor.transform.position);
+                        marker.SetDebugText(className.Substring(0, className.Length - 1));
+                        FieldCards.Add(className);
+                        StartCoroutine(EvaluateHand());
+                    }
+                }
+            }
+
+        }
+
+        // Step 3: Handle hand cards logic
         if (thisTimeInHand.Count == 2)
         {
-            // different from last time?
-            if (HandCards[0] == thisTimeInHand[0] && HandCards[1] == thisTimeInHand[1] ||
-                HandCards[1] == thisTimeInHand[0] && HandCards[0] == thisTimeInHand[1])
+            if (!((HandCards[0] == thisTimeInHand[0] && HandCards[1] == thisTimeInHand[1]) ||
+                  (HandCards[1] == thisTimeInHand[0] && HandCards[0] == thisTimeInHand[1])))
             {
-                // same as last time, do nothing
-            }
-            // New Hand cards
-            else {
                 HandCards[0] = thisTimeInHand[0];
                 HandCards[1] = thisTimeInHand[1];
-                Debug.Log($"Cards in hand updated: {HandCards[0]}, {HandCards[1]}");
                 handText.text = $"{HandCards[0]}\n{HandCards[1]}\n";
-                // Start evaluation coroutine
                 StartCoroutine(EvaluateHand());
             }
         }
-        else
-        {
-            // Dont actualize because wrong tracking or to much or less cards in hand
-        }
+
         thisTimeInHand.Clear();
+    }
+
+    private Vector3? GetWorldPoint(ObjectDetectionPrediction prediction)
+    {
+        float halfWidth = targetWidth * 0.5f;
+        float halfHeight = targetHeight * 0.5f;
+
+        // Convert detection to world space
+        float adjustedCenterX = prediction.X - halfWidth;
+        float adjustedCenterY = prediction.Y - halfHeight;
+        float perX = (adjustedCenterX + halfWidth) / targetWidth;
+        float perY = (adjustedCenterY + halfHeight) / targetHeight;
+        Vector2 centerPixel = new Vector2(perX * PassthroughCameraUtils.GetCameraIntrinsics(webCamTextureManager.Eye).Resolution.x, (1.0f - perY) * PassthroughCameraUtils.GetCameraIntrinsics(webCamTextureManager.Eye).Resolution.y);
+        Ray centerRay = PassthroughCameraUtils.ScreenPointToRayInWorld(
+            webCamTextureManager.Eye,
+            new Vector2Int(Mathf.RoundToInt(centerPixel.x), Mathf.RoundToInt(centerPixel.y))
+        );
+
+        if (!envRaycastManager.Raycast(centerRay, out var centerHit))
+            return null;
+
+        return centerHit.point;
     }
 
     // Convert Unity card format to API format
     public static string roboflowCardToNodeJsCard(string card)
     {
         if (string.IsNullOrEmpty(card) || card.Length < 2)
-            throw new ArgumentException("Invalid card format");
+            throw new ArgumentException("Invalid card format ###" + card);
 
         string rank = card.Substring(0, card.Length - 1); // all except last char
         char suit = char.ToLower(card[card.Length - 1]);  // last char to lowercase
