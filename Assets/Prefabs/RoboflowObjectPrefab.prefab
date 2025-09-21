@@ -498,7 +498,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4d5c548e272af1459eed801e36249fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoDisableDuration: 2
-  debugTextObject: {fileID: 2180178383274072909}
-  debugText: {fileID: 585520498841049092}
+  labelText: {fileID: 585520498841049092}
   classID: 0
