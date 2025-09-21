@@ -409,7 +409,6 @@ GameObject:
   - component: {fileID: 430395113860230494}
   - component: {fileID: 7588352069189975263}
   - component: {fileID: 3027708448991746193}
-  - component: {fileID: 7807077494376524574}
   m_Layer: 0
   m_Name: RoboflowObjectPrefab
   m_TagString: Untagged
@@ -465,7 +464,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a864af4db0c94e047a1669424b44ab6d, type: 2}
+  - {fileID: 2100000, guid: 26960cbbe4a0d4a40b9c8cb2777aa832, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -503,16 +502,3 @@ MonoBehaviour:
   debugTextObject: {fileID: 2180178383274072909}
   debugText: {fileID: 585520498841049092}
   classID: 0
---- !u!114 &7807077494376524574
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4598129501795045920}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c581ee4a5bab6f4ab722636475a9cb3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationSpeed: 60
