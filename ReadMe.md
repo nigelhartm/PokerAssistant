@@ -1,4 +1,5 @@
 # Poker Assistant
+Poker Equity Assistant is a application for Meta Quest (soon smartglasses) that uses computer vision to scan a poker game and a robust simulation engine to calculate hand equity in real-time. By providing instant, data-driven insights directly in your field of view, this project helps players make mathematically optimal decisions and improves their game.
 
 ## Preview
 https://github.com/user-attachments/assets/6c041819-7b06-4d1a-9434-8603f22ca982
