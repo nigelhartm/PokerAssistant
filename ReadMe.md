@@ -4,7 +4,7 @@
 https://github.com/user-attachments/assets/6c041819-7b06-4d1a-9434-8603f22ca982
 
 ## Architecture
-<img width="1283" height="668" alt="Screenshot 2025-09-21 210133" src="https://github.com/user-attachments/assets/d43c6a1a-086c-4fbd-acf5-b05ff4dbac38" />
+<img width="640" height="330" alt="Screenshot 2025-09-21 210133" src="https://github.com/user-attachments/assets/d43c6a1a-086c-4fbd-acf5-b05ff4dbac38" />
 
 
 
