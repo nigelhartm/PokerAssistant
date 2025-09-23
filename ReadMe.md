@@ -7,11 +7,11 @@ https://github.com/user-attachments/assets/6c041819-7b06-4d1a-9434-8603f22ca982
 <img width="640" height="330" alt="Screenshot 2025-09-21 210133" src="https://github.com/user-attachments/assets/d43c6a1a-086c-4fbd-acf5-b05ff4dbac38" />
 
 ## Applications/Packages
-[Unity](https://unity.com/) 6000.0.55f1
-[Meta XR SDK](https://assetstore.unity.com/packages/tools/integration/meta-xr-all-in-one-sdk-269657)
-[Meta PCA Sample](https://github.com/oculus-samples/Unity-PassthroughCameraApiSamples)
-[Roboflow Inference](https://github.com/roboflow/inference)
-[Poker-Odds NodeJs](https://github.com/cookpete/poker-odds) -> Serverfile under ./backend/server.js
+* [Unity](https://unity.com/) 6000.0.55f1
+* [Meta XR SDK](https://assetstore.unity.com/packages/tools/integration/meta-xr-all-in-one-sdk-269657)
+* [Meta PCA Sample](https://github.com/oculus-samples/Unity-PassthroughCameraApiSamples)
+* [Roboflow Inference](https://github.com/roboflow/inference)
+* [Poker-Odds NodeJs](https://github.com/cookpete/poker-odds) -> Serverfile under ./backend/server.js
 
 ## Setup
 Follow the instructions on https://github.com/nigelhartm/MetaPCARoboflow and take care to include the correct IP Adress of your local Server (Computer) and that the Meta Quest is in the same Wifi network.
