@@ -14,19 +14,9 @@ public class HandMenuLookActivator : MonoBehaviour
         if (!handTransform || !centerEyeAnchor || !handMenu)
             return;
 
-        // Vector from hand to eye
         Vector3 handToEye = (centerEyeAnchor.position - handTransform.position).normalized;
-
-        // Hand's forward direction (assuming Y axis points toward the palm/finger)
-        Vector3 handForward = -handTransform.up; // Use .forward if Y is not correct
-
-        // Calculate angle between hand forward and handToEye vector
+        Vector3 handForward = -handTransform.up;
         float angle = Vector3.Angle(handForward, handToEye);
-
-        // Debug: Show angle in console
-        // Debug.Log("Angle: " + angle);
-
-        // Activate menu if angle is small enough (you're looking at your hand)
         handMenu.SetActive(angle <= activationAngle);
     }
 }
