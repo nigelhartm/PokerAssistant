@@ -33,5 +33,5 @@ Additional to the local Roboflow inference server there is a NodeJs Backend whic
 * Permissions - On Meta Quest, double-check that all necessary permissions are enabled in the settings.
 
 ## Resources
-PokerAssets: https://github.com/zardtomcat
+PokerAssets: https://github.com/zardtomcat <br>
 Icons: <a href="https://www.flaticon.com/free-icons/poker" title="poker icons">Freepik - Flaticon</a>
