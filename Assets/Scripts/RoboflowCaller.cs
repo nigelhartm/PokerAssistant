@@ -150,6 +150,7 @@ public class RoboflowCaller : MonoBehaviour {
         // Dictionary to store accumulated positions per class
         Dictionary<string, List<Vector3>> classPositions = new();
 
+        // Step 1: Combine double detections
         foreach (var prediction in predictions) {
             if (prediction.Confidence < minConfidence)
                 continue;
@@ -185,6 +186,7 @@ public class RoboflowCaller : MonoBehaviour {
                     StartCoroutine(EvaluateHand());
                 }
             }
+            // Else Field Card
             else {
                 if (positions.Count >= 2) {
                     // Just track on first view -> Because of tracking delay
