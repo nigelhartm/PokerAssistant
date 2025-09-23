@@ -18,18 +18,18 @@ Follow the instructions on https://github.com/nigelhartm/MetaPCARoboflow and tak
 Additional to the local Roboflow inference server there is a NodeJs Backend which need to be setup. Which is basically just starting the NodeJS server file, after initializing the nodejs environment.
 
 ## Unity Objects
-WebCamTextureManager - Use the Passthrough Camera of Meta Quest
-EnvironmentRaycastManager - Using Meta’s Depth API to get the distance to objects
-RoboflowCaller - Entire Application logic
-BuildingBlocks - Meta XR blocks for easy integration & project setup.
-HandActivator - Turn on Hand GUI if watching on inner hand
+* WebCamTextureManager - Use the Passthrough Camera of Meta Quest
+* EnvironmentRaycastManager - Using Meta’s Depth API to get the distance to objects
+* RoboflowCaller - Entire Application logic
+* BuildingBlocks - Meta XR blocks for easy integration & project setup.
+* HandActivator - Turn on Hand GUI if watching on inner hand
 
 ## Possbile Problems
-Internet Connection - Ensure your app has a secure and stable internet connection.
-IP Address - Verify that the IP address in your “RoboflowCaller” object is correct.
-Local Inference - Make sure your Docker and Roboflow Local Inference are running. The first time you start, the model may take a few minutes to download.
-Poker Odds Server - Confirm that the Node.js Poker Odds Server is active and running.
-Permissions - On Meta Quest, double-check that all necessary permissions are enabled in the settings.
+* Internet Connection - Ensure your app has a secure and stable internet connection.
+* IP Address - Verify that the IP address in your “RoboflowCaller” object is correct.
+* Local Inference - Make sure your Docker and Roboflow Local Inference are running. The first time you start, the model may take a few minutes to download.
+* Poker Odds Server - Confirm that the Node.js Poker Odds Server is active and running.
+* Permissions - On Meta Quest, double-check that all necessary permissions are enabled in the settings.
 
 ## Resources
 PokerAssets: https://github.com/zardtomcat
