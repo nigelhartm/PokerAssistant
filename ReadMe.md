@@ -3,6 +3,12 @@ A Meta Quest application that uses computer vision and Poker Odds API to calcula
 
 <img src="https://github.com/user-attachments/assets/77c3c56a-8e14-46db-b135-75bf267cb436" alt="Poker AI Assistant" width="540px">
 
+## 🎴 Demo
+
+https://github.com/user-attachments/assets/953abc4d-e776-432c-92ec-77ef535a7f98
+
+---
+
 ## 🔎 Overview
 * This project uses computer vision to scan poker game cards and runs simulation engine to calculate hand equity in real-time.
 * It provides instant, data-driven insights direcly in your field of view, helping players make mathematically optimal decisions. 
